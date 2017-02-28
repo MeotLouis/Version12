@@ -118,42 +118,42 @@ fileName = get(handles.edit_path_input,'string');
 fileInputSimulation=fileName;
 setappdata(0,'path_input',fileName);
 AddSignal(fileName,get(handles.listbox_selected,'String'));
-% %Construction du chemin du fichier de sortie
-% fileOutputSimulation=strcat(fileInputSimulation(1:end-3),'.lis');
-% 
-% %Suppression du fichier de sortie s'il existe
-% if exist(fileOutputSimulation,'file')==2
-%   delete(fileOutputSimulation);
-% end
-% 
-% %Lancement de Hspice
-% command=[getappdata(0,'path_Hspice'),' ','-C',' ',fileInputSimulation,' -o',' ',fileOutputSimulation];
-% system(command);
-% 
-% %Put the extracted signal in the listbox
-% listeSignal=SignalExtractor(fileOutputSimulation);
-% setappdata(0,'listeSignaux',listeSignal);
-% listeNoms=listeSignal(1,:)';
-% set(handles.listbox_signal_out,'String',listeNoms);
-% set(handles.listbox_transistor,'String',Displaytransistor(fileOutputSimulation));
-% listeSignaux=getappdata(0,'listeSignaux');
-% set(handles.listbox_signal_out,'Value',2);
-% % %On plot le signal selectionn?(XAXIS)
-% axes(handles.axes1);
-% temps=listeSignaux(2:end,1);
-% temps=cellfun(@str2num,temps); 
-% assignin('base','temps',temps);
-% %temps=cell2mat(temps);
-% 
-% %On plot le signal selectionn?(YAXIS)
-% data2=listeSignaux(2:end,2);
-% data2=cellfun(@str2num,data2); 
-% semilogx(temps,data2);
-% axes(handles.axes1);
-% xlabel(listeSignaux{1,1}, 'FontSize', 10);
-% ylabel(listeSignaux{1,2}, 'FontSize', 10);
-% set(handles.uitoolbar1,'visible','on');
-% guidata(hObject, handles);
+%Construction du chemin du fichier de sortie
+fileOutputSimulation=strcat(fileInputSimulation(1:end-3),'.lis');
+
+%Suppression du fichier de sortie s'il existe
+if exist(fileOutputSimulation,'file')==2
+  delete(fileOutputSimulation);
+end
+
+%Lancement de Hspice
+command=[getappdata(0,'path_Hspice'),' ','-C',' ',fileInputSimulation,' -o',' ',fileOutputSimulation];
+system(command);
+
+%Put the extracted signal in the listbox
+listeSignal=SignalExtractor(fileOutputSimulation);
+setappdata(0,'listeSignaux',listeSignal);
+listeNoms=listeSignal(1,:)';
+set(handles.listbox_signal_out,'String',listeNoms);
+set(handles.listbox_transistor,'String',Displaytransistor(fileOutputSimulation));
+listeSignaux=getappdata(0,'listeSignaux');
+set(handles.listbox_signal_out,'Value',2);
+% %On plot le signal selectionn?(XAXIS)
+axes(handles.axes1);
+temps=listeSignaux(2:end,1);
+temps=cellfun(@str2num,temps); 
+assignin('base','temps',temps);
+%temps=cell2mat(temps);
+
+%On plot le signal selectionn?(YAXIS)
+data2=listeSignaux(2:end,2);
+data2=cellfun(@str2num,data2); 
+semilogx(temps,data2);
+axes(handles.axes1);
+xlabel(listeSignaux{1,1}, 'FontSize', 10);
+ylabel(listeSignaux{1,2}, 'FontSize', 10);
+set(handles.uitoolbar1,'visible','on');
+guidata(hObject, handles);
 
 
 % --- Executes on selection change in listbox_all.
@@ -324,7 +324,6 @@ listeSignaux=getappdata(0,'listeSignaux');
 axes(handles.axes1);
 temps=listeSignaux(2:end,1);
 temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
 %temps=cell2mat(temps);
 
 %On plot le signal selectionn?(YAXIS)

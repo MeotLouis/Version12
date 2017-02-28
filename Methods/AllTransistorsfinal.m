@@ -11,7 +11,6 @@ while ischar(tline)
 end
 fclose(fid);
 [nbligness , inutile]=size(tlines2);
-assignin('base','tlines2',tlines2);
 %%Boucle permettant de récupérer que les lignes concernants les transistors
 for i=1:nbligness
     tline=tlines2{i};
@@ -51,7 +50,6 @@ for i=1:nbligness
         tlines{end+1,1} = tline;
     end
 end
-assignin('base','tlines',tlines);
 [nblignes , inutile]=size(tlines);
 
 listeProvisoire={'indexExperience','element','model','region','id','ibs','ibd','vgs','vds','vbs','vth','vdsat','vod','beta','gam eff','gm','gds','gmb','cdtot','cgtot','cstot','cbtot','cgs','cgd'}';
