@@ -324,7 +324,6 @@ listeSignaux=getappdata(0,'listeSignaux');
 axes(handles.axes1);
 temps=listeSignaux(2:end,1);
 temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
 %temps=cell2mat(temps);
 
 %On plot le signal selectionn?(YAXIS)
