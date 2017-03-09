@@ -73,7 +73,7 @@ tline=fgetl(fid);
 tline=strsplit(tline,'\');
 path2='';
 for i=1:length(tline)
-    if ~isempty(strfind(tline{1,i},' '))
+    if ~isempty(strfind(tline{1,i},' '))&&isempty(strfind(tline{1,i},'"'))
         path2=[path2,'"',tline{1,i},'"\'];
     else
         path2=[path2,tline{1,i},'\'];
@@ -85,7 +85,7 @@ tline=fgetl(fid);
 tline=strsplit(tline,'\');
 path2='';
 for i=1:length(tline)
-    if ~isempty(strfind(tline{1,i},' '))
+    if ~isempty(strfind(tline{1,i},' '))&&isempty(strfind(tline{1,i},'"'))
         path2=[path2,'"',tline{1,i},'"\'];
     else
         path2=[path2,tline{1,i},'\'];
@@ -97,7 +97,7 @@ tline=fgetl(fid);
 tline=strsplit(tline,'\');
 path2='';
 for i=1:length(tline)
-    if ~isempty(strfind(tline{1,i},' '))
+    if ~isempty(strfind(tline{1,i},' '))&&isempty(strfind(tline{1,i},'"'))
         path2=[path2,'"',tline{1,i},'"\'];
     else
         path2=[path2,tline{1,i},'\'];
