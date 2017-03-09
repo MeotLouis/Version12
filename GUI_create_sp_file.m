@@ -228,7 +228,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 a=cell(1,1);
-a{1,1}='*******ENCODED BY LOUIS MEOT*******';
+a{1,1}='******************';
 set(hObject,'String',a);
 
 
@@ -1343,7 +1343,6 @@ else
         [~,b]=size(text1);
         for i=1:b
             if ~isequal(text1{1,i},'')
-                display(text1{1,i});
                 dataNetlist{4,1}{end+1,1}=text1{1,i};
                 Add_Nodes(text1{1,i});
                 
@@ -1355,12 +1354,9 @@ else
         data{end+1,1}=dataNetlist;
         setappdata(0,'data',data);
         %----END UPDATE DATA---%
-        assignin('base','data',data);
-        display(data{1,1});
         set(handles.popup_node_netlist,'String',data{1,1});
         set(handles.popup_node1_element,'String',data{1,1});
         set(handles.popup_node2_element,'String',data{1,1});
-        display('done');
         contents = cellstr(get(handles.popup_add_netlist,'String'));
         select=contents{get(handles.popup_add_netlist,'Value')};
         liste=get(handles.listbox_all_lines,'String');
@@ -2499,7 +2495,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function Reset(handles)
-set(handles.listbox_all_lines,'String',{'*******ENCODED BY LOUIS MEOT*******'});
+set(handles.listbox_all_lines,'String',{'******************'});
 set(handles.listbox_all_lines,'Value',1);
 % set(handles.popup_node2_element,'String','');
 % set(handles.popup_node1_element,'String','');
