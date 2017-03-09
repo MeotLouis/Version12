@@ -61,7 +61,7 @@ else
     text(x+5*l/8,y-w/4,S);
     name=element{2,1};
     text(x+l,y+5*w/8,name);
-    model=['[',element{6,1},']'];
+    model=['[',element{7,1},']'];
     text(x+l,y+3*w/8,model);
 end
 

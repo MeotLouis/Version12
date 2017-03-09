@@ -1853,7 +1853,7 @@ if isempty(S)
     S=S{1,1}; 
 end
 l=get(handles.edit_l_MOSFET,'String');
-if isempty(S)
+if isempty(l)
     l=inputdlg('Enter length of MOSFET');
     l=l{1,1}; 
 end
@@ -1864,7 +1864,6 @@ if isempty(w)
 end
 if ~isempty(get(handles.edit_B_MOSFET,'String'))
     Add_Nodes(get(handles.edit_B_MOSFET,'String'));
-    S=[S,' ',get(handles.edit_B_MOSFET,'String')];
 end
 model='';
 if ~isempty(get(handles.edit_path_technology,'String'))
@@ -1894,7 +1893,7 @@ end
 %-----Data update-----%
 Add_Nodes(D);
 Add_Nodes(G);
-Add_Nodes(get(handles.edit_S_MOSFET,'String'));
+Add_Nodes(S);
 data_bipolar=cell(0,1);
 data_bipolar{end+1,1}='MOSFET';
 data_bipolar{end+1,1}=['M',name];
@@ -1903,6 +1902,7 @@ data_bipolar{end+1,1}=G;
 data_bipolar{end+1,1}=S;
 if ~isempty(get(handles.edit_B_MOSFET,'String'))
     data_bipolar{end+1,1}=get(handles.edit_B_MOSFET,'String');
+    S=[S,' ',get(handles.edit_B_MOSFET,'String')];
 else
     data_bipolar{end+1,1}='false';
 end
