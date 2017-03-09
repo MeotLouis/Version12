@@ -228,7 +228,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 a=cell(1,1);
-a{1,1}='*******ENCODED BY LOUIS MEOT*******';
+a{1,1}='******************';
 set(hObject,'String',a);
 
 
@@ -839,7 +839,6 @@ else
 %     set(handles.listbox_all_lines,'Value',a);
     set(handles.edit_path_file,'String','');
     set(handles.popup_node_netlist,'String',{' '});
-    
     set(handles.edit_name_netlist2,'String','');
     list_netlist=getappdata(0,'list_netlist');
     list_netlist{end+1,1}=get(handles.edit_netlist_subckt,'String');
@@ -1329,7 +1328,7 @@ else
         errordlg(sprintf(['Invalid name, you can not use the letter ''',letter,''' at the beginning of the name\nYou can use X for example.']));
     else   
         %----UPDATE DATA-----%
-        data=getappdata(0,'data');
+        
         dataNetlist=cell(5,1);
         dataNetlist{1,1}='netlist';
         dataNetlist{2,1}=name;
@@ -1351,12 +1350,13 @@ else
         end
         dataNetlist{5,1}={0,0};
         dataNetlist{6,1}={10,10};
+        data=getappdata(0,'data');
         data{end+1,1}=dataNetlist;
         setappdata(0,'data',data);
         %----END UPDATE DATA---%
-        assignin('base','data',data);
         set(handles.popup_node_netlist,'String',data{1,1});
-        display('done');
+        set(handles.popup_node1_element,'String',data{1,1});
+        set(handles.popup_node2_element,'String',data{1,1});
         contents = cellstr(get(handles.popup_add_netlist,'String'));
         select=contents{get(handles.popup_add_netlist,'Value')};
         liste=get(handles.listbox_all_lines,'String');
@@ -1853,7 +1853,7 @@ if isempty(S)
     S=S{1,1}; 
 end
 l=get(handles.edit_l_MOSFET,'String');
-if isempty(S)
+if isempty(l)
     l=inputdlg('Enter length of MOSFET');
     l=l{1,1}; 
 end
@@ -1864,7 +1864,6 @@ if isempty(w)
 end
 if ~isempty(get(handles.edit_B_MOSFET,'String'))
     Add_Nodes(get(handles.edit_B_MOSFET,'String'));
-    S=[S,' ',get(handles.edit_B_MOSFET,'String')];
 end
 model='';
 if ~isempty(get(handles.edit_path_technology,'String'))
@@ -1894,7 +1893,7 @@ end
 %-----Data update-----%
 Add_Nodes(D);
 Add_Nodes(G);
-Add_Nodes(get(handles.edit_S_MOSFET,'String'));
+Add_Nodes(S);
 data_bipolar=cell(0,1);
 data_bipolar{end+1,1}='MOSFET';
 data_bipolar{end+1,1}=['M',name];
@@ -1903,6 +1902,7 @@ data_bipolar{end+1,1}=G;
 data_bipolar{end+1,1}=S;
 if ~isempty(get(handles.edit_B_MOSFET,'String'))
     data_bipolar{end+1,1}=get(handles.edit_B_MOSFET,'String');
+    S=[S,' ',get(handles.edit_B_MOSFET,'String')];
 else
     data_bipolar{end+1,1}='false';
 end
@@ -2495,7 +2495,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function Reset(handles)
-set(handles.listbox_all_lines,'String',{'*******ENCODED BY LOUIS MEOT*******'});
+set(handles.listbox_all_lines,'String',{'******************'});
 set(handles.listbox_all_lines,'Value',1);
 % set(handles.popup_node2_element,'String','');
 % set(handles.popup_node1_element,'String','');

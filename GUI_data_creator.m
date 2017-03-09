@@ -268,7 +268,7 @@ if pos_name==1
 elseif isempty(value)
     errordlg('Missing value');
 else
-    list_params=getappdata(0,'list_params');
+    list_params=get(handles.uitable1,'Data');
     list_params{pos_name-1,get(handles.pop_index,'Value')}=value;
     setappdata(0,'list_params',list_params);
     set(handles.uitable1,'Data',list_params);
@@ -289,7 +289,7 @@ if isempty(name)
 elseif isempty(value)
     errordlg('Missing value of parameter');
 else
-    list_params=getappdata(0,'list_params');
+    list_params=get(handles.uitable1,'Data');
     [a,~]=size(list_params);
     if a==0
         list_params{end+1,1}=name;
