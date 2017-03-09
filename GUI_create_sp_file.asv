@@ -1328,7 +1328,7 @@ else
         errordlg(sprintf(['Invalid name, you can not use the letter ''',letter,''' at the beginning of the name\nYou can use X for example.']));
     else   
         %----UPDATE DATA-----%
-        
+        data=getappdata(0,'data');
         dataNetlist=cell(5,1);
         dataNetlist{1,1}='netlist';
         dataNetlist{2,1}=name;
@@ -1343,7 +1343,7 @@ else
         [~,b]=size(text1);
         for i=1:b
             if ~isequal(text1{1,i},'')
-                display(text1{1,i});
+                display(
                 dataNetlist{4,1}{end+1,1}=text1{1,i};
                 Add_Nodes(text1{1,i});
                 
@@ -1351,15 +1351,12 @@ else
         end
         dataNetlist{5,1}={0,0};
         dataNetlist{6,1}={10,10};
-        data=getappdata(0,'data');
         data{end+1,1}=dataNetlist;
         setappdata(0,'data',data);
         %----END UPDATE DATA---%
         assignin('base','data',data);
         display(data{1,1});
         set(handles.popup_node_netlist,'String',data{1,1});
-        set(handles.popup_node1_element,'String',data{1,1});
-        set(handles.popup_node2_element,'String',data{1,1});
         display('done');
         contents = cellstr(get(handles.popup_add_netlist,'String'));
         select=contents{get(handles.popup_add_netlist,'Value')};
