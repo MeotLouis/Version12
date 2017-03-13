@@ -62,7 +62,68 @@ Init(handles);
 % UIWAIT makes GUI_create_sp_file wa={'a','ait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-
+function Init(handles)
+setappdata(0,'type_circuit','main');
+set(findall(handles.panel_create_sub, '-property', 'enable'), 'enable', 'off')
+set(handles.Subcircuit_Checkbox,'Value',0);
+set(findall(handles.panel_implement_sub, '-property', 'enable'), 'enable', 'on')
+set(handles.text_help_sub,'enable','on');
+%On va essayer de tout stocker dans 'data'
+data=cell(0,1);
+data{end+1}=cell(0,1);
+setappdata(0,'data',data);
+setappdata(0,'type_circuit','main');
+setappdata(0,'nb_ports',0);
+setappdata(0,'list_nodes',cell(0,1));
+setappdata(0,'list_nodes_netlist',cell(0,1));
+setappdata(0,'name_netlist',[]);
+setappdata(0,'nb_netlist',0);
+setappdata(0,'list_netlist',cell(0,1));
+setappdata(0,'import_techno_already_done',0);
+axes(handles.axes1);
+axis off;
+% IMPORT OF .INC FILES
+list_files=cellstr(ls(getappdata(0,'project_directory')));
+list2=cell(0,1);
+nb=0;
+list_netlist2=cell(0,1);
+[nb_ligne,~]=size(list_files);
+if nb_ligne>2
+    for i=3:nb_ligne
+        aux2=list_files{i,1};
+        aux=strsplit(list_files{i,1},'.');
+        if isequal(aux{1,2},'inc')
+            list2{end+1,1}=aux{1,1};
+            nb=nb+1;
+            display(aux2);
+            presence=0;
+            fid=fopen([getappdata(0,'project_directory'),'\',aux2]);
+            tline=fgetl(fid);
+            while ischar(tline)&&presence==0
+                if ~isempty(strfind(tline,'.subckt'))
+                    list_netlist=getappdata(0,'list_netlist');
+                    list_netlist{end+1,1}=tline;
+                    setappdata(0,'list_netlist',list_netlist);
+                    presence=1;
+                end
+                tline=fgetl(fid);
+            end
+            fclose(fid);
+        end
+    end
+%     list=get(handles.popup_add_netlist,'String');
+%     if ~iscell(list)
+%         list3=cell(0,1);
+%         list3{end+1,1}=list;
+%         list=list3;
+%     end
+    list={'-'};
+    for i=1:nb
+        list{end+1,1}=list2{i,1};
+    end
+    set(handles.popup_add_netlist,'String',list);
+    
+end
 
 % --- Outputs from this function are returned to the command line.
 function varargout = GUI_create_sp_file_OutputFcn(hObject, eventdata, handles) 
@@ -80,8 +141,36 @@ function push_generate_Callback(hObject, eventdata, handles)
 % hObject    handle to push_generate (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 %handles    structure with handles and user data (see GUIDATA)
-PushGenerate(handles);
+if isequal(getappdata(0,'type_circuit'),'main')
+    if isempty(get(handles.edit_name_circuit,'String'))
+        errordlg('Missing name of circuit');
+    end
+    if isempty(getappdata(0,'project_directory'))
+        errordlg('Missing project directory');
+        project_directory=uigetdir();
+        setappdata(0,'project_directory',project_directory);
+    end
+    path=getappdata(0,'project_directory');
+    name=get(handles.edit_name_circuit,'String');
+    %/!\METTRE ICI LE CONDITION DE SUPPRESSION DE L'ANCIEN FICHIER S'IL EXISTE
+    name_file=[path,'\',name,'.sp'];
+    if exist(name_file,'file')~=0
+        delete(name_file);
+    end
 
+    fid=fopen(name_file,'at');
+    tlines=get(handles.listbox_all_lines,'String');
+    [lignes,~]=size(tlines);
+    for i=1:lignes
+       fprintf(fid, strcat(tlines{i,1},'\n')); 
+    end
+    fprintf(fid,'\n');
+    fclose(fid);
+    close(GUI_create_sp_file);
+    GUI_Parent()
+else
+    errordlg('You circuit must be the Main Circuit to be generated as a sp file');
+end
 
 
 % --- Executes on button press in push_edit_line.
@@ -174,8 +263,100 @@ function popupmenu2_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu2
-PopUpMenu2(hObject, eventdata, handles)
-
+set(handles.static_help,'String',sprintf(DisplayHelp('source',get(hObject,'Value'))));
+contents = cellstr(get(hObject,'String'));
+select=contents{get(hObject,'Value')};
+if length(select)>1
+    %------Default display-------%
+    set(handles.push_add_source,'enable','off');
+    set(handles.edit_name_source,'enable','off');
+    set(handles.edit_node1_source,'enable','off');
+    set(handles.edit_node2_source,'enable','off');
+    set(handles.edit_option_source,'enable','off');
+    set(handles.text7,'enable','off');
+    set(handles.text8,'enable','off');
+    set(handles.text9,'enable','off');
+    set(handles.text10,'enable','off');
+    set(handles.text11,'enable','off');
+    %--------Panel Display-------%
+    set(handles.text42,'enable','off');
+    set(handles.text34,'enable','off');
+    set(handles.text35,'enable','off');
+    set(handles.text38,'enable','off');
+    set(handles.text39,'enable','off');
+    set(handles.text40,'enable','off');
+    set(handles.text41,'enable','off');
+    set(handles.text22,'enable','off');
+    set(handles.edit_in1,'enable','off');
+    set(handles.edit_in2,'enable','off');
+    set(handles.edit_keyword,'enable','off');
+    set(handles.edit_gain,'enable','off');
+    set(handles.edit_vn1,'enable','off');
+    set(handles.edit_transR,'enable','off');
+    set(handles.edit_transC,'enable','off');
+    set(handles.edit_value_source,'enable','off');
+else
+    %--------Reset Panel Display-------%
+    set(handles.text42,'enable','off');
+    set(handles.text34,'enable','off');
+    set(handles.text35,'enable','off');
+    set(handles.text38,'enable','off');
+    set(handles.text39,'enable','off');
+    set(handles.text40,'enable','off');
+    set(handles.text41,'enable','off');
+    set(handles.text22,'enable','off');
+    set(handles.edit_in1,'enable','off');
+    set(handles.edit_in2,'enable','off');
+    set(handles.edit_keyword,'enable','off');
+    set(handles.edit_gain,'enable','off');
+    set(handles.edit_vn1,'enable','off');
+    set(handles.edit_transR,'enable','off');
+    set(handles.edit_transC,'enable','off');
+    set(handles.edit_value_source,'enable','off');
+    %----------Default display----------%
+    set(handles.push_add_source,'enable','on');
+    set(handles.edit_name_source,'enable','on');
+    set(handles.edit_node1_source,'enable','on');
+    set(handles.edit_node2_source,'enable','on');
+    set(handles.edit_option_source,'enable','on');
+    set(handles.text7,'enable','on');
+    set(handles.text8,'enable','on');
+    set(handles.text9,'enable','on');
+    set(handles.text10,'enable','on');
+    set(handles.text11,'enable','on');
+    if isequal(select,'V')||isequal(select,'I')
+        set(handles.edit_value_source,'enable','on');
+        set(handles.text22,'enable','on');
+    else
+        set(handles.edit_keyword,'enable','on');
+        set(handles.text42,'enable','on');
+        if isequal(select,'E')
+            set(handles.edit_in1,'enable','on');
+            set(handles.edit_in2,'enable','on');
+            set(handles.text34,'enable','on');
+            set(handles.text35,'enable','on');
+            set(handles.edit_gain,'enable','on');
+            set(handles.text38,'enable','on');
+        elseif isequal(select,'F')
+            set(handles.edit_vn1,'enable','on');
+            set(handles.text39,'enable','on');
+            set(handles.edit_gain,'enable','on');
+            set(handles.text38,'enable','on');
+        elseif isequal(select,'G')
+            set(handles.edit_in1,'enable','on');
+            set(handles.edit_in2,'enable','on');
+            set(handles.text34,'enable','on');
+            set(handles.text35,'enable','on');
+            set(handles.edit_transC,'enable','on');
+            set(handles.text41,'enable','on');
+        else
+            set(handles.edit_vn1,'enable','on');
+            set(handles.text39,'enable','on');
+            set(handles.edit_transR,'enable','on');
+            set(handles.text40,'enable','on');
+        end
+    end    
+end
 % --- Executes during object creation, after setting all properties.
 function popupmenu2_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to popupmenu2 (see GCBO)
@@ -217,7 +398,179 @@ function push_add_source_Callback(~, ~, handles)
 % hObject    handle to push_add_source (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-PushAddSource(handles);
+contents = cellstr(get(handles.popupmenu2,'String'));
+select = contents{get(handles.popupmenu2,'Value')};
+[~,b]=size(select);
+if b==2
+    errordlg('Missing type of source');
+elseif isempty(get(handles.edit_name_source,'String'))
+    errordlg('Missing name of source');
+elseif isempty(get(handles.edit_node1_source,'String'))
+    errordlg('Missing ports +');
+elseif isempty(get(handles.edit_node2_source,'String'))
+    errordlg('Missing ports -');
+else
+    if isequal(select,'V')||isequal(select,'I')
+        if isempty(get(handles.edit_value_source,'String'));
+            value=inputdlg('Please enter value of source:');
+            value=value{1,1};
+        else
+            value=get(handles.edit_value_source,'String');
+            value=IsOperation(value);
+        end
+        suite=value;
+    else
+        if isequal(select,'E')
+            in1=get(handles.edit_in1,'String');
+            if isempty(in1);
+                in1=inputdlg('Please enter name of control node +:');
+                in1=in1{1,1};
+            end
+            in2=get(handles.edit_in2,'String');
+            if isempty(in2);
+                in2=inputdlg('Please enter name of control node -:');
+                in2=in2{1,1};
+            end 
+            gain=get(handles.edit_gain,'String');
+            if isempty(gain);
+                gain=inputdlg('Please gain of source value:');
+                gain=gain{1,1};
+            end
+            value=gain;
+            keyword=get(handles.edit_keyword,'String');
+            if isempty(keyword);
+                suite=[in1,' ',in2,' ',gain];
+            else
+                suite=[keyword,' ',in1,' ',in2,' ',gain];
+            end
+            Add_Nodes(in1);
+            Add_Nodes(in2);
+        elseif isequal(select,'F')
+            vn1=get(handles.edit_vn1,'String');
+            if isempty(vn1);
+                vn1=inputdlg('Please enter name of voltage source who take the flow:');
+                vn1=vn1{1,1};
+            end
+            gain=get(handles.edit_gain,'String');
+            if isempty(gain);
+                gain=inputdlg('Please gain of source value:');
+                gain=gain{1,1};
+            end
+            value=gain;
+            keyword=get(handles.edit_keyword,'String');
+            if isempty(keyword);
+                suite=[vn1,' ',gain];
+            else
+                suite=[keyword,' ',vn1,' ',gain];
+            end
+        elseif isequal(select,'G')
+            in1=get(handles.edit_in1,'String');
+            if isempty(in1);
+                in1=inputdlg('Please enter name of control node +:');
+                in1=in1{1,1};
+            end
+            in2=get(handles.edit_in2,'String');
+            if isempty(in2);
+                in2=inputdlg('Please enter name of control node -:');
+                in2=in2{1,1};
+            end 
+            gain=get(handles.edit_transC,'String');
+            if isempty(gain);
+                gain=inputdlg('Please value of transconductance:');
+                gain=gain{1,1};
+            end
+            value=gain;
+            keyword=get(handles.edit_keyword,'String');
+            if isempty(keyword);
+                suite=[in1,' ',in2,' ',gain];
+            else
+                suite=[keyword,' ',in1,' ',in2,' ',gain];
+            end
+            Add_Nodes(in1);
+            Add_Nodes(in2);
+        else
+            vn1=get(handles.edit_vn1,'String');
+            if isempty(vn1);
+                vn1=inputdlg('Please enter name of voltage source who take the flow:');
+                vn1=vn1{1,1};
+            end
+            gain=get(handles.edit_transR,'String');
+            if isempty(gain);
+                gain=inputdlg('Please value of transresistance:');
+                gain=gain{1,1};
+            end
+            value=gain;
+            keyword=get(handles.edit_keyword,'String');
+            if isempty(keyword);
+                suite=[vn1,' ',gain];
+            else
+                suite=[keyword,' ',vn1,' ',gain];
+            end
+        end
+    end
+    
+    type=select;
+    name=get(handles.edit_name_source,'String');
+    node1=get(handles.edit_node1_source,'String');
+    node2=get(handles.edit_node2_source,'String');
+    type2=type;
+    type=[type,name,' ',node1,' ',node2,' ',suite];
+    if ~isempty(get(handles.edit_option_source,'String'))
+        type=[type,' ',get(handles.edit_option_source,'String')];
+    end
+    
+    %--------DATA-------%
+    Add_Nodes(node1);
+    Add_Nodes(node2);
+    dataSource=cell(8,1);
+    dataSource{1,1}='Source';
+    dataSource{2,1}=name;
+    dataSource{3,1}=node1;
+    dataSource{4,1}=node2;
+    dataSource{5,1}=type2;
+    dataSource{6,1}=value;
+    dataSource{7,1}={0,0};
+    dataSource{8,1}={10,10};
+    data=getappdata(0,'data');
+    data{end+1,1}=dataSource;
+    setappdata(0,'data',data);
+    %On affiche la liste de nodes dans les popup d'element
+    set(handles.popup_node1_element,'String',data{1,1});
+    set(handles.popup_node2_element,'String',data{1,1});
+    set(handles.popup_node_netlist,'String',data{1,1});
+    
+    %-----Reset edittext------%
+    set(handles.edit_name_source,'String','');
+    set(handles.edit_node1_source,'String','');
+    set(handles.edit_node2_source,'String','');
+    set(handles.edit_value_source,'String','');
+    set(handles.edit_option_source,'String','');
+    set(handles.popupmenu2,'Value',1);
+    set(handles.edit_in1,'String','');
+    set(handles.edit_in2,'String','');
+    set(handles.edit_keyword,'String','');
+    set(handles.edit_gain,'String','');
+    set(handles.edit_vn1,'String','');
+    set(handles.edit_transR,'String','');
+    set(handles.edit_transC,'String','');
+    
+    %-----Update La listbox-----%
+    liste=get(handles.listbox_all_lines,'String');
+    liste{end+1,1}=type;
+    [a,~]=size(liste);
+    set(handles.listbox_all_lines,'Value',a);
+    set(handles.listbox_all_lines,'String',liste);
+    
+    %-----Affichage graphique-----%
+    CalculCoordonates(handles);
+    %-------OLD APPDATA-----%
+%     list_nodes=getappdata(0,'list_nodes');
+%     list_nodes{end+1,1}=node1;
+%     list_nodes{end+1,1}=node2;
+%     setappdata(0,'list_nodes',list_nodes);
+%     set(handles.popup_node1_element,'String',list_nodes);
+%     set(handles.popup_node2_element,'String',list_nodes);
+ end
 
 function edit_node1_source_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_node1_source (see GCBO)
@@ -346,8 +699,34 @@ function push_add_options_Callback(hObject, eventdata, handles)
 % hObject    handle to push_add_options (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-PushAddOptions(handles);
-
+option=get(handles.edit_option,'String');
+if ~isempty(option)
+    %Generate basics option to simplifie the use
+    if isequal('.OPTION Default options',option)
+        set(handles.edit_option,'String','');
+        liste=get(handles.listbox_all_lines,'String');
+        liste{end+1,1}='.option unwrap=1';
+        liste{end+1,1}='.TEMP 27';
+        liste{end+1,1}='.option post';
+        liste{end+1,1}='.option ingold=1';
+        liste{end+1,1}='.option converge=1';
+        liste{end+1,1}='.global 0';
+        liste{end+1,1}='';
+        set(handles.listbox_all_lines,'String',liste);
+        [a,~]=size(liste);
+        set(handles.listbox_all_lines,'Value',a);
+        set(handles.popup_options,'Value',1);
+    else
+        set(handles.edit_option,'String','');
+        liste=get(handles.listbox_all_lines,'String');
+        liste{end+1,1}=option;
+        liste{end+1,1}='';
+        set(handles.listbox_all_lines,'String',liste);
+        [a,~]=size(liste);
+        set(handles.listbox_all_lines,'Value',a);
+        set(handles.popup_options,'Value',1);
+    end
+end
 
 
 function edit_path_file_Callback(hObject, eventdata, handles)
@@ -415,7 +794,67 @@ function push_import_netlist_Callback(hObject, eventdata, handles)
 % hObject    handle to push_import_netlist (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-PushImportNetlist(handles);
+display(get(handles.popup_node_netlist,'String'),'');
+if isempty(getappdata(0,'project_directory'))
+    errordlg('Missing project directory');
+    project_directory=uigetdir();
+    setappdata(0,'project_directory',project_directory);
+elseif isempty(get(handles.edit_name_netlist,'String'))
+    errordlg('Missing name of Sub circuit');
+elseif isempty(get(handles.popup_node_netlist,'String'))
+    errordlg('You need to add at least one port to generate a subcircuit');
+else
+    path=getappdata(0,'project_directory');
+    name=get(handles.edit_name_netlist,'String');
+
+    name_file=[path,'\',name,'.inc'];
+    if exist(name_file,'file')~=0
+        delete(name_file);
+    end
+
+    fid=fopen(name_file,'at');
+    tlines=get(handles.listbox_all_lines,'String');
+    [lignes,~]=size(tlines);
+    fprintf(fid,strcat(get(handles.edit_netlist_subckt,'String'),'\n'));
+    for i=1:lignes
+       fprintf(fid, strcat(tlines{i,1},'\n')); 
+    end
+    fprintf(fid,'.ends');
+    fprintf(fid,'\n');
+    fclose(fid);
+
+%     set(handles.popup_add_netlist,'Enable','on');
+%     set(handles.edit_add_netlist,'Enable','on');
+%     set(handles.push_add_netlist,'Enable','on');
+%     type=get(handles.edit_name_netlist,'String');
+%     list=get(handles.popup_add_netlist,'String');
+%     if ~iscell(list)
+%         list2=cell(0,1);
+%         list2{end+1,1}=list;
+%         list=list2;
+%     end
+%     list{end+1,1}=type;
+%     set(handles.popup_add_netlist,'String',list);
+%     [a,~]=size(list);
+%     set(handles.listbox_all_lines,'Value',a);
+    set(handles.edit_path_file,'String','');
+    set(handles.popup_node_netlist,'String',{' '});
+    set(handles.edit_name_netlist2,'String','');
+    list_netlist=getappdata(0,'list_netlist');
+    list_netlist{end+1,1}=get(handles.edit_netlist_subckt,'String');
+    setappdata(0,'list_netlist',list_netlist);
+    set(handles.edit_netlist_subckt,'String','.subckt');
+    set(handles.edit_name_netlist,'String','');
+    set(handles.push_add_name,'Enable','on');
+    setappdata(0,'name_netlist',[]);
+    %Enalble all edit and popup disabled because of the use of the create tool
+    set(handles.edit_path_file,'enable','on');
+    set(handles.edit_name_netlist,'enable','on');
+    set(handles.edit_netlist_subckt,'enable','on');
+    set(handles.popup_node_netlist,'enable','on');
+    Reset(handles);
+end
+
 
 % --- Executes on button press in push_add_port_netlist.
 function push_add_port_netlist_Callback(hObject, eventdata, handles)

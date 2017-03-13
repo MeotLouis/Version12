@@ -22,7 +22,7 @@ function varargout = GUI_Add_Analysis(varargin)
 
 % Edit the above text to modify the response to help GUI_Add_Analysis
 
-% Last Modified by GUIDE v2.5 07-Nov-2016 17:07:28
+% Last Modified by GUIDE v2.5 13-Mar-2017 15:44:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -549,3 +549,12 @@ if get(hObject,'Value')~=1
 else
     set(handles.editText(3),'enable','off');
 end
+
+
+% --- Executes on button press in push_back.
+function push_back_Callback(hObject, eventdata, handles)
+% hObject    handle to push_back (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+GUI_create_sp_file();
+
