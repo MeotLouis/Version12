@@ -22,7 +22,7 @@ function varargout = GUI_Simulation(varargin)
 
 % Edit the above text to modify the response to help GUI_Simulation
 
-% Last Modified by GUIDE v2.5 10-Jan-2017 23:37:50
+% Last Modified by GUIDE v2.5 13-Mar-2017 14:42:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -136,24 +136,43 @@ setappdata(0,'listeSignaux',listeSignal);
 listeNoms=listeSignal(1,:)';
 set(handles.listbox_signal_out,'String',listeNoms);
 set(handles.listbox_transistor,'String',Displaytransistor(fileOutputSimulation));
-listeSignaux=getappdata(0,'listeSignaux');
 set(handles.listbox_signal_out,'Value',2);
+Plot(handles,2);
+
+function Plot(handles,indice_signal)
 % %On plot le signal selectionn?(XAXIS)
+listeSignaux=getappdata(0,'listeSignaux');
 axes(handles.axes1);
 temps=listeSignaux(2:end,1);
 temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
 %temps=cell2mat(temps);
-
 %On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,2);
+data2=listeSignaux(2:end,indice_signal);
 data2=cellfun(@str2num,data2); 
-semilogx(temps,data2);
+if get(handles.check_log,'Value')==1
+    semilogx(temps,data2);
+else
+    plot(temps,data2);
+end
+if get(handles.checkX,'Value')==1
+    set(handles.axes1,'XGrid','on');
+    set(handles.axes1,'XMinorGrid','on');
+else
+    set(handles.axes1,'XGrid','off');
+    set(handles.axes1,'XMinorGrid','off');
+end
+if get(handles.checkY,'Value')==1
+    set(handles.axes1,'YGrid','on');
+    set(handles.axes1,'YMinorGrid','on');
+else
+    set(handles.axes1,'YGrid','off');
+    set(handles.axes1,'YMinorGrid','off');
+end
 axes(handles.axes1);
 xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,2}, 'FontSize', 10);
+ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
 set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
+guidata(handles.figure1, handles);
 
 
 % --- Executes on selection change in listbox_all.
@@ -319,22 +338,8 @@ function listbox_signal_out_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns listbox_signal_out contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from listbox_signal_out
 indice_signal=get(hObject,'Value');
-listeSignaux=getappdata(0,'listeSignaux');
-% %On plot le signal selectionn?(XAXIS)
-axes(handles.axes1);
-temps=listeSignaux(2:end,1);
-temps=cellfun(@str2num,temps); 
-%temps=cell2mat(temps);
-
-%On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,indice_signal);
-data2=cellfun(@str2num,data2); 
-semilogx(temps,data2);
-axes(handles.axes1);
-xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
-set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
+setappdata(0,'indice',indice_signal);
+Plot(handles,indice_signal);
 
 % --- Executes during object creation, after setting all properties.
 function listbox_signal_out_CreateFcn(hObject, eventdata, handles)
@@ -557,3 +562,34 @@ phase=phase_aux(2:end,indice_phase);
 phase=cellfun(@str2num,phase)
 handles.metricdata.phase = phase;
 guidata(hObject,handles)
+
+
+% --- Executes on button press in check_log.
+function check_log_Callback(hObject, eventdata, handles)
+% hObject    handle to check_log (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of check_log
+Plot(handles,getappdata(0,'indice'));
+
+
+% --- Executes on button press in checkX.
+function checkX_Callback(hObject, eventdata, handles)
+% hObject    handle to checkX (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkX
+Plot(handles,getappdata(0,'indice'));
+
+
+% --- Executes on button press in checkY.
+function checkY_Callback(hObject, eventdata, handles)
+% hObject    handle to checkY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkY
+Plot(handles,getappdata(0,'indice'));
+
