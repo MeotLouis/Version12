@@ -422,72 +422,14 @@ function push_add_port_netlist_Callback(hObject, eventdata, handles)
 % hObject    handle to push_add_port_netlist (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if isempty(getappdata(0,'name_netlist'))
-     errordlg('Missing name of netlist');
-else
-    %update de la list de port du panel add subcircuit
-    contents = cellstr(get(handles.popup_node_netlist,'String'));
-    port=contents{get(handles.popup_node_netlist,'Value')};
-    display(port);
-    if isequal(port,'')
-        errordlg('Please add at least one element to generate port');
-    else
-        list_nodes=getappdata(0,'list_nodes');
-        list_nodes{end+1,1}=port;
-        setappdata(0,'list_nodes',list_nodes);
-        set(handles.popup_node1_element,'String',list_nodes);
-        set(handles.popup_node2_element,'String',list_nodes);
-        ligne=get(handles.edit_netlist_subckt,'String');
-        ligne=[ligne,port,' '];
-        setappdata(0,'nb_ports',getappdata(0,'nb_ports')+1);
-        set(handles.edit_netlist_subckt,'String',ligne);
-        list_nodes_netlist=getappdata(0,'list_nodes_netlist');
-        list_nodes_netlist{end+1,1}=port;
-        setappdata(0,'list_nodes_netlist',list_nodes_netlist);
-
-        %----UPDATE DATA-----%
-        Add_Nodes(port);
-        data=getappdata(0,'data');
-        %update popup node elements
-        set(handles.popup_node1_element,'String',data{1,1});
-        set(handles.popup_node2_element,'String',data{1,1});
-        set(handles.popup_node_netlist,'String',data{1,1});
-
-        %data{end,1}{5,1}{end+1,1}=port;
-        %setappdata(0,'data',data);
-        %----END UPDATE DATA---%
-    end
-end
-
-
+PushAddPortNetlist(handles);
 
 % --- Executes on button press in push_add_name.
 function push_add_name_Callback(hObject, eventdata, handles)
 % hObject    handle to push_add_name (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if isempty(get(handles.edit_name_netlist,'String'))
-    errordlg('Missing name');
-else
-    text=get(handles.edit_name_netlist,'String');
-    setappdata(0,'name_netlist',text);
-    setappdata(0,'nb_netlist',getappdata(0,'nb_netlist')+1);
-    set(hObject,'Enable','on');
-    set(handles.edit_netlist_subckt,'String',[get(handles.edit_netlist_subckt,'String'),' ',text,' ']);
-    
-%     %----UPDATE DATA-----%
-%     data=getappdata(0,'data');
-%     dataNetlist=cell(5,1);
-%     dataNetlist{1,1}='nelist';
-%     dataNetlist{2,1}=text;
-%     dataNetlist{3,1}=cell(0,1);
-%     dataNetlist{4,1}=cell(0,1);
-%     dataNetlist{5,1}={0,0};
-%     dataNetlist{6,1}={10,10};
-%     data{end+1,1}=dataNetlist;
-%     setappdata(0,'data',data);
-%     %----END UPDATE DATA---%
-end
+PushAddName(handles);
 
 function edit_netlist_subckt_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_netlist_subckt (see GCBO)
@@ -563,82 +505,7 @@ function push_add_element_Callback(hObject, eventdata, handles)
 % hObject    handle to push_add_element (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-contents = cellstr(get(handles.popup_type_element,'String'));
-select = contents{get(handles.popup_type_element,'Value')};
-if isequal(select,'-')
-    errordlg('Missing type of element');
-elseif isempty(get(handles.edit_name_element,'String'))
-    errordlg('Missing name of element');
-elseif isempty(get(handles.edit_value_element,'String'))
-    errordlg('Missing value of element');
-else
-    type=select;
-    contents = cellstr(get(handles.popup_node1_element,'String'));
-    select = contents{get(handles.popup_node1_element,'Value')};
-    node1=select;
-    contents = cellstr(get(handles.popup_node2_element,'String'));
-    select = contents{get(handles.popup_node2_element,'Value')};
-    node2=select;
-    value=get(handles.edit_value_element,'String');
-    %On effectue cette boucle pour voir si la valeur est une équation et
-    %mettre des '' si elle en est une
-    pattern={'*','+','/','-'};
-    a=0;
-    for j=1:4
-        if ~isempty(strfind(value,pattern{1,j}))
-            a=a+1;
-        end
-    end
-    if a~=0
-        value=['''',value,''''];
-    end
-    %Test si le nom est déja utilisé
-    name=get(handles.edit_name_element,'String');
-    data=getappdata(0,'data');
-    bool=0;
-    for i=2:length(data);
-        if isequal(name,data{i,1}{2,1})
-            bool=1;
-        end
-    end
-    if bool==1
-        errordlg('Name already in use');
-    else
-        %---------UPDATE DATA----%
-        data=getappdata(0,'data');
-        dataElement=cell(8,1);
-        dataElement{1,1}='element';
-        dataElement{2,1}=name;
-        dataElement{3,1}=node1;
-        dataElement{4,1}=node2;
-        dataElement{5,1}=type;
-        dataElement{6,1}=value;
-        dataElement{7,1}={0,0};
-        dataElement{8,1}={10,10};
-        data{end+1,1}=dataElement;
-        setappdata(0,'data',data);
-        %---------END UPDATE DATA----%
-
-        type=[type,name,' ',node1,' ',node2,' ',value];
-        if ~isempty(get(handles.edit_option_element,'String'))
-            type=[type,' ',get(handles.edit_option_source,'String')];
-        end
-        %REset edit text
-        set(handles.edit_name_element,'String','');
-        set(handles.edit_value_element,'String','');
-        set(handles.edit_option_element,'String','');
-        set(handles.popup_type_element,'Value',1);
-        %Update listbox all lines
-        liste=get(handles.listbox_all_lines,'String');
-        liste{end+1,1}=type;
-        set(handles.listbox_all_lines,'String',liste);
-        [a,~]=size(liste);
-        set(handles.listbox_all_lines,'Value',a);
-        %-----Affichage graphique-----%
-        CalculCoordonates(handles);
-    end
-end
- 
+PushAddElement(handles);
 
 function edit_option_element_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_option_element (see GCBO)
@@ -783,19 +650,7 @@ function popup_add_netlist_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popup_add_netlist contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popup_add_netlist
-list=getappdata(0,'list_netlist');
-if get(hObject,'Value')>1
-    select=list{get(hObject,'Value')-1};
-    select=strsplit(select);
-    [~,b]=size(select);
-    select1='';
-    for i=3:b
-        select1=[select1,select{i},' '];
-    end
-    set(handles.static_add_netlist,'String',select1);
-else
-    set(handles.static_add_netlist,'String','');
-end
+PopupAddElement(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
 function popup_add_netlist_CreateFcn(hObject, eventdata, handles)
@@ -838,102 +693,8 @@ function push_add_netlist_Callback(hObject, eventdata, handles)
 % hObject    handle to push_add_netlist (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-base=get(handles.static_add_netlist,'String');
-text=get(handles.edit_add_netlist,'String');
-base1=strsplit(base);
-text1=strsplit(text);
-[~,a]=size(base1);
-aa=a;
-for i=1:a
-    if isequal(base1{1,i},'')
-        aa=aa-1;
-    end
-end
-[~,b]=size(text1);
-bb=b;
-for i=1:b
-    if isequal(text1{1,i},'')
-        bb=bb-1;
-    end
-end
-name=get(handles.edit_name_netlist2,'String');
-contents = cellstr(get(handles.popup_add_netlist,'String'));
-type=contents{get(handles.popup_add_netlist,'Value')};
-if aa~=bb
-    errordlg(['You must connect all ports of the netlist. Number required: ',num2str(aa),' Number you have submited:',num2str(bb)]);
-elseif isempty(name)
-     errordlg('Missing name of element');   
-elseif isequal(type,'-')
-    errordlg('Missing type of subcircuit');
-else
-    %Test si le nom est déja utilisé et n'utilise pas une lettre non
-    %autorisée
-    data=getappdata(0,'data');
-    bool=0;
-    bool2=0;
-    for i=2:length(data);
-        if isequal(name,data{i,1}{2,1})
-            bool=1;
-        end
-    end
-    pattern={'e','f','g','h','v','i','d','k','l','c','E','F','G','H','V','I','D','K','L','C'};
-    for i=1:length(pattern)
-        if ~isempty(strfind(name,pattern{1,i}))
-            bool2=1;
-            letter=pattern{1,i};
-        end
-    end
-    if bool==1
-        errordlg('Name already in use');
-    elseif bool2==1
-        errordlg(sprintf(['Invalid name, you can not use the letter ''',letter,''' at the beginning of the name\nYou can use X for example.']));
-    else   
-        %----UPDATE DATA-----%
-        
-        dataNetlist=cell(5,1);
-        dataNetlist{1,1}='netlist';
-        dataNetlist{2,1}=name;
-        dataNetlist{3,1}=cell(0,1);
-        [~,a]=size(base1);
-        for i=1:a
-            if ~isequal(base1{1,i},'')
-                dataNetlist{3,1}{end+1,1}=base1{1,i};
-            end
-        end
-        dataNetlist{4,1}=cell(0,1);
-        [~,b]=size(text1);
-        for i=1:b
-            if ~isequal(text1{1,i},'')
-                dataNetlist{4,1}{end+1,1}=text1{1,i};
-                Add_Nodes(text1{1,i});
-                
-            end
-        end
-        dataNetlist{5,1}={0,0};
-        dataNetlist{6,1}={10,10};
-        data=getappdata(0,'data');
-        data{end+1,1}=dataNetlist;
-        setappdata(0,'data',data);
-        %----END UPDATE DATA---%
-        set(handles.popup_node_netlist,'String',data{1,1});
-        set(handles.popup_node1_element,'String',data{1,1});
-        set(handles.popup_node2_element,'String',data{1,1});
-        contents = cellstr(get(handles.popup_add_netlist,'String'));
-        select=contents{get(handles.popup_add_netlist,'Value')};
-        liste=get(handles.listbox_all_lines,'String');
-        liste{end+1,1}=[name,' ',get(handles.edit_add_netlist,'String'),' ',select];
-        set(handles.listbox_all_lines,'String',liste);
-        [a,~]=size(liste);
-        set(handles.listbox_all_lines,'Value',a);
-        set(handles.popup_add_netlist,'Value',1);
-        set(handles.static_add_netlist,'String','');
-        set(handles.edit_add_netlist,'String','');
-        set(handles.edit_name_netlist2,'String','');
+PushAddNetlist(handles);
 
-        %-----Affichage graphique-----%
-        CalculCoordonates(handles);
-    end
-end
 
 function edit_name_netlist_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_name_netlist2 (see GCBO)
@@ -995,22 +756,7 @@ function push_import_file_Callback(hObject, eventdata, handles)
 % hObject    handle to push_import_file (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if ~isempty(get(handles.edit_path_file2,'String'))
-    fid2=fopen(get(handles.edit_path_file2,'String'));
-    tline = fgetl(fid2);
-    tlines2=cell(0,1);
-    while ischar(tline)
-        tlines2{end+1,1} = tline;
-        tline = fgetl(fid2);
-    end
-    fclose(fid2);
-    [a,~]=size(tlines2);
-    for i=1:a
-        liste=get(handles.listbox_all_lines,'String');
-        liste{end+1,1}=tlines2{i,1};
-        set(handles.listbox_all_lines,'String',liste);
-    end
-end
+PushImportFile(handles);
 
 
 % --- Executes on button press in push_create_netlist_tool.
@@ -1207,94 +953,7 @@ function push_add_bipolar_Callback(hObject, eventdata, handles)
 % hObject    handle to push_add_bipolar (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-name=get(handles.edit_name_bipolar,'String');
-if isempty(name)
-    name=inputdlg('Enter name of Bipolar transistor');
-    name=name{1,1};
-end
-E=get(handles.edit_E_bipolar,'String');
-if isempty(E)
-    E=inputdlg('Enter name of node connected to Emettor');
-    E=E{1,1};
-end
-B=get(handles.edit_B_bipolar,'String');
-if isempty(B)
-    B=inputdlg('Enter name of node connected to Base');
-    B=B{1,1};
-end
-C=get(handles.edit_C_bipolar,'String');
-if isempty(C)
-    C=inputdlg('Enter name of node connected to Collector');
-    C=C{1,1};
-end
-model='';
-if ~isempty(get(handles.edit_path_technology,'String'))
-    %Copie du fichier .lib
-    foo=strsplit(get(handles.edit_path_technology,'String'),'\');
-    foo=foo(end);
-    destination=strcat(getappdata(0,'project_directory'),'\',foo);
-    destination=destination{1,1};
-    if ~isequal(get(handles.edit_path_technology,'String'),destination)
-        copyfile(get(handles.edit_path_technology,'String'),destination,'f');
-        %Bloc permettant de copier le fichier .mdl
-        path_mld=get(handles.edit_path_technology,'String');
-        path_mld=path_mld(1:end-3);
-        path_mld=[path_mld,'mdl'];
-        destination=destination(1:end-3);
-        destination=[destination,'mdl'];
-        assignin('base','path_mld',path_mld);
-        if exist(path_mld, 'file') ~= 0
-            copyfile(path_mld,destination,'f'); 
-        end
-    end
-    
-    model=getappdata(0,'current_models')';
-    model=model{get(handles.popup_bipolar,'Value')};
-end
-
-%-----Data update-----%
-Add_Nodes(C);
-Add_Nodes(B);
-Add_Nodes(E);
-data_bipolar=cell(0,1);
-data_bipolar{end+1,1}='Bipolar';
-data_bipolar{end+1,1}=['G',name];
-data_bipolar{end+1,1}=C;
-data_bipolar{end+1,1}=B;
-data_bipolar{end+1,1}=E;
-data_bipolar{end+1,1}=model;
-data=getappdata(0,'data');
-data{end+1,1}=data_bipolar;
-setappdata(0,'data',data);
-set(handles.popup_node1_element,'String',data{1,1});
-set(handles.popup_node2_element,'String',data{1,1});
-set(handles.popup_node_netlist,'String',data{1,1});
-
-%------ListBox Update----%
-liste=get(handles.listbox_all_lines,'String');
-%Import du nom de la techno et ecriture dans le fichier
-if ~isempty(model)&&getappdata(0,'import_techno_already_done')==0;
-    liste{end+1,1} = '';
-    liste{end+1,1} = '*Import libraries';
-    liste{end+1,1} = '';
-    liste{end+1,1} = '.prot';
-    liste{end+1,1} = ['.LIB ','./',foo{1,1},' ',getappdata(0,'quelle_techno')];
-    liste{end+1,1} = '.unprot';
-    liste{end+1,1} = '';
-    setappdata(0,'import_techno_already_done',1);
-end
-liste{end+1,1}=['G',name,' ',C,' ',B,' ',E,' ',model];
-set(handles.listbox_all_lines,'String',liste);
-
-%-----REset of fields------%
-set(handles.edit_C_bipolar,'String','');
-set(handles.edit_name_bipolar,'String','');
-set(handles.edit_B_bipolar,'String','');
-set(handles.edit_E_bipolar,'String','');
-set(handles.popup_bipolar,'Value',1);
-
-%-----Affichage graphique-----%
-        CalculCoordonates(handles);
+PushAddBipolar(handles);
 
 
 % --- Executes on button press in push_add_JFET.
@@ -1302,209 +961,16 @@ function push_add_JFET_Callback(hObject, eventdata, handles)
 % hObject    handle to push_add_JFET (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-name=get(handles.edit_name_JFET,'String');
-if isempty(name)
-    name=inputdlg('Enter name of JFET transistor');
-    name=name{1,1};
-end
-D=get(handles.edit_D_JFET,'String');
-if isempty(D)
-    D=inputdlg('Enter name of node connected to D');
-    D=D{1,1};
-end
-G=get(handles.edit_G_JFET,'String');
-if isempty(G)
-    G=inputdlg('Enter name of node connected to G');
-    G=G{1,1};
-end
-S=get(handles.edit_S_JFET,'String');
-if isempty(S)
-    S=inputdlg('Enter name of node connected to S');
-    S=S{1,1}; 
-end
-model='';
-if ~isempty(get(handles.edit_path_technology,'String'))
-    %Copie du fichier .lib
-    foo=strsplit(get(handles.edit_path_technology,'String'),'\');
-    foo=foo(end);
-    destination=strcat(getappdata(0,'project_directory'),'\',foo);
-    destination=destination{1,1};
-    if ~isequal(get(handles.edit_path_technology,'String'),destination)
-        copyfile(get(handles.edit_path_technology,'String'),destination,'f');
-        %Bloc permettant de copier le fichier .mdl
-        path_mld=get(handles.edit_path_technology,'String');
-        path_mld=path_mld(1:end-3);
-        path_mld=[path_mld,'mdl'];
-        destination=destination(1:end-3);
-        destination=[destination,'mdl'];
-        assignin('base','path_mld',path_mld);
-        if exist(path_mld, 'file') ~= 0
-            copyfile(path_mld,destination,'f'); 
-        end
-    end
-    
-    model=getappdata(0,'current_models')';
-    model=model{get(handles.popup_bipolar,'Value')};
-end
+PushAddJFET(handles);
 
-%-----Data update-----%
-Add_Nodes(D);
-Add_Nodes(G);
-Add_Nodes(S);
-data_bipolar=cell(0,1);
-data_bipolar{end+1,1}='JFET';
-data_bipolar{end+1,1}=['J',name];
-data_bipolar{end+1,1}=D;
-data_bipolar{end+1,1}=G;
-data_bipolar{end+1,1}=S;
-data_bipolar{end+1,1}=model;
-data=getappdata(0,'data');
-data{end+1,1}=data_bipolar;
-setappdata(0,'data',data);
-set(handles.popup_node1_element,'String',data{1,1});
-set(handles.popup_node2_element,'String',data{1,1});
-set(handles.popup_node_netlist,'String',data{1,1});
-
-liste=get(handles.listbox_all_lines,'String');
-%Import du nom de la techno et ecriture dans le fichier
-if ~isempty(model)&&getappdata(0,'import_techno_already_done')==0;
-    liste{end+1,1} = '';
-    liste{end+1,1} = '*Import libraries';
-    liste{end+1,1} = '';
-    liste{end+1,1} = '.prot';
-    liste{end+1,1} = ['.LIB ','./',foo{1,1},' ',getappdata(0,'quelle_techno')];
-    liste{end+1,1} = '.unprot';
-    liste{end+1,1} = '';
-    setappdata(0,'import_techno_already_done',1);
-end
-liste{end+1,1}=['J',name,' ',D,' ',G,' ',S,' ',model];
-set(handles.listbox_all_lines,'String',liste);
-set(handles.edit_D_JFET,'String','');
-set(handles.edit_G_JFET,'String','');
-set(handles.edit_S_JFET,'String','');
-set(handles.edit_name_JFET,'String','');
-set(handles.popup_JFET,'Value',1);
-
-%-----Affichage graphique-----%
-        CalculCoordonates(handles);
 
 % --- Executes on button press in push_add_MOSFET.
 function push_add_MOSFET_Callback(hObject, eventdata, handles)
 % hObject    handle to push_add_MOSFET (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-name=get(handles.edit_name_MOSFET,'String');
-if isempty(name)
-    name=inputdlg('Enter name of MOSFET transistor');
-    name=name{1,1};
-end
-D=get(handles.edit_D_MOSFET,'String');
-if isempty(D)
-    D=inputdlg('Enter name of node connected to D');
-    D=D{1,1};
-end
-G=get(handles.edit_G_MOSFET,'String');
-if isempty(G)
-    G=inputdlg('Enter name of node connected to G');
-    G=G{1,1};
-end
-S=get(handles.edit_S_MOSFET,'String');
-if isempty(S)
-    S=inputdlg('Enter name of node connected to S');
-    S=S{1,1}; 
-end
-l=get(handles.edit_l_MOSFET,'String');
-if isempty(l)
-    l=inputdlg('Enter length of MOSFET');
-    l=l{1,1}; 
-end
-w=get(handles.edit_w_MOSFET,'String');
-if isempty(w)
-    w=inputdlg('Enter width of MOSFET');
-    w=w{1,1}; 
-end
-if ~isempty(get(handles.edit_B_MOSFET,'String'))
-    Add_Nodes(get(handles.edit_B_MOSFET,'String'));
-end
-model='';
-if ~isempty(get(handles.edit_path_technology,'String'))
-    %Copie du fichier .lib
-    foo=strsplit(get(handles.edit_path_technology,'String'),'\');
-    foo=foo(end);
-    destination=strcat(getappdata(0,'project_directory'),'\',foo);
-    destination=destination{1,1};
-    if ~isequal(get(handles.edit_path_technology,'String'),destination)
-        copyfile(get(handles.edit_path_technology,'String'),destination,'f');
-        %Bloc permettant de copier le fichier .mdl
-        path_mld=get(handles.edit_path_technology,'String');
-        path_mld=path_mld(1:end-3);
-        path_mld=[path_mld,'mdl'];
-        destination=destination(1:end-3);
-        destination=[destination,'mdl'];
-        assignin('base','path_mld',path_mld);
-        if exist(path_mld, 'file') ~= 0
-            copyfile(path_mld,destination,'f'); 
-        end
-    end
-    
-    model=getappdata(0,'current_models')';
-    model=model{get(handles.popup_MOSFET,'Value')};
-end
+PushAddMOSFET(handles);
 
-%-----Data update-----%
-Add_Nodes(D);
-Add_Nodes(G);
-Add_Nodes(S);
-data_bipolar=cell(0,1);
-data_bipolar{end+1,1}='MOSFET';
-data_bipolar{end+1,1}=['M',name];
-data_bipolar{end+1,1}=D;
-data_bipolar{end+1,1}=G;
-data_bipolar{end+1,1}=S;
-if ~isempty(get(handles.edit_B_MOSFET,'String'))
-    data_bipolar{end+1,1}=get(handles.edit_B_MOSFET,'String');
-    S=[S,' ',get(handles.edit_B_MOSFET,'String')];
-else
-    data_bipolar{end+1,1}='false';
-end
-data_bipolar{end+1,1}=model;
-data=getappdata(0,'data');
-data{end+1,1}=data_bipolar;
-setappdata(0,'data',data);
-set(handles.popup_node1_element,'String',data{1,1});
-set(handles.popup_node2_element,'String',data{1,1});
-set(handles.popup_node_netlist,'String',data{1,1});
-liste=get(handles.listbox_all_lines,'String');
-
-%Import du nom de la techno et ecriture dans le fichier
-if ~isempty(model)&&getappdata(0,'import_techno_already_done')==0;
-    liste{end+1,1} = '';
-    liste{end+1,1} = '*Import libraries';
-    liste{end+1,1} = '';
-    liste{end+1,1} = '.prot';
-    liste{end+1,1} = ['.LIB ','./',foo{1,1},' ',getappdata(0,'quelle_techno')];
-    liste{end+1,1} = '.unprot';
-    liste{end+1,1} = '';
-    setappdata(0,'import_techno_already_done',1);
-end
-a=['M',name,' ',D,' ',G,' ',S,' ',model,' ','l=',l,' ','w=',w];
-if ~isempty(get(handles.edit_m,'String'))
-    a=[a,' ','M=',get(handles.edit_m,'String')];
-end
-liste{end+1,1}=a;
-set(handles.listbox_all_lines,'String',liste);
-set(handles.edit_D_MOSFET,'String','');
-set(handles.edit_G_MOSFET,'String','');
-set(handles.edit_S_MOSFET,'String','');
-set(handles.edit_B_MOSFET,'String','');
-set(handles.edit_name_MOSFET,'String','');
-set(handles.edit_l_MOSFET,'String','');
-set(handles.edit_w_MOSFET,'String','');
-set(handles.edit_m,'String','');
-set(handles.popup_MOSFET,'Value',1);
-
-%-----Affichage graphique-----%
-        CalculCoordonates(handles);
 
 function edit_name_bipolar_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_name_bipolar (see GCBO)
@@ -2054,30 +1520,6 @@ function popup_techno_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-function Reset(handles)
-set(handles.listbox_all_lines,'String',{'******************'});
-set(handles.listbox_all_lines,'Value',1);
-% set(handles.popup_node2_element,'String','');
-% set(handles.popup_node1_element,'String','');
-% set(handles.popup_node_netlist,'String','');
-Init(handles);
-setappdata(0,'type_circuit','sub');
-%set(findall(handles.panel_implement_sub, '-property', 'enable'), 'enable', 'off')
-%set(findall(handles.panel_create_sub, '-property', 'enable'), 'enable', 'on')
-set(handles.Main_circuit_Checkbox,'Value',0);
-set(handles.Subcircuit_Checkbox,'Value',1);
-set(handles.edit_name_circuit,'enable','off');
-set(handles.text_main_circuit,'enable','off');
-set(handles.push_preset_sp_file,'enable','off');
-a=get(handles.popup_add_netlist,'String');
-display(a);
-[n,m]=size(a);
-if n>1
-    set(findall(handles.panel_implement_sub, '-property', 'enable'), 'enable', 'on')
-end
-set(findall(handles.panel_create_sub, '-property', 'enable'), 'enable', 'on')
-%CalculCoordonates(handles);
 
 
 function edit_m_Callback(hObject, eventdata, handles)
