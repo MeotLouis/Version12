@@ -1,0 +1,40 @@
+function SpLoader( tlines,handles )
+%SPLOADER Summary of this function goes here
+%   Detailed explanation goes here
+[ligne,~]=size(tlines);
+sub=0;
+for i=1:ligne
+    if isequal(tlines{i,1}{1,1},'.subckt')
+        sub=1;
+    end
+    if isequal(tlines{i,1}{1,1},'.ends')
+        sub=0;
+    end
+    if sub==0
+        if isequal(tlines{i,1}{1,1}(1),'m')||isequal(tlines{i,1}{1,1}(1),'M')
+            ImportMOSFET(tlines{i,1},handles);
+        elseif isequal(tlines{i,1}{1,1}(1),'v')||isequal(tlines{i,1}{1,1}(1),'V')||...
+                isequal(tlines{i,1}{1,1}(1),'i')||isequal(tlines{i,1}{1,1}(1),'I')||...
+                isequal(tlines{i,1}{1,1}(1),'e')||isequal(tlines{i,1}{1,1}(1),'E')||...
+                isequal(tlines{i,1}{1,1}(1),'f')||isequal(tlines{i,1}{1,1}(1),'F')||...
+                isequal(tlines{i,1}{1,1}(1),'g')||isequal(tlines{i,1}{1,1}(1),'G')||...
+                isequal(tlines{i,1}{1,1}(1),'h')||isequal(tlines{i,1}{1,1}(1),'H')
+            ImportSource(tlines{i,1},handles);
+        elseif isequal(tlines{i,1}{1,1}(1),'j')||isequal(tlines{i,1}{1,1}(1),'J')
+            ImportJFET(tlines{i,1},tlines);
+        elseif isequal(tlines{i,1}{1,1}(1),'b')||isequal(tlines{i,1}{1,1}(1),'B')
+            ImportBipolar(tlines{i,1},tlines);
+        elseif isequal(tlines{i,1}{1,1}(1),'r')||isequal(tlines{i,1}{1,1}(1),'R')||...
+                isequal(tlines{i,1}{1,1}(1),'l')||isequal(tlines{i,1}{1,1}(1),'L')||...
+                isequal(tlines{i,1}{1,1}(1),'c')||isequal(tlines{i,1}{1,1}(1),'C')||...
+                isequal(tlines{i,1}{1,1}(1),'k')||isequal(tlines{i,1}{1,1}(1),'K')||...
+                isequal(tlines{i,1}{1,1}(1),'d')||isequal(tlines{i,1}{1,1}(1),'D')
+            ImportSimpleElement(tlines{i,1},tlines);
+        else
+            if ~isequal(tlines{i,1}{1,1}(1),'.')
+                ImportSUB(tlines{i,1},tlines);
+            end
+        end
+    end
+end
+

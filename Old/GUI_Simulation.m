@@ -22,7 +22,7 @@ function varargout = GUI_Simulation(varargin)
 
 % Edit the above text to modify the response to help GUI_Simulation
 
-% Last Modified by GUIDE v2.5 17-Mar-2017 00:46:57
+% Last Modified by GUIDE v2.5 13-Mar-2017 14:42:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -135,34 +135,44 @@ listeSignal=SignalExtractor(fileOutputSimulation);
 setappdata(0,'listeSignaux',listeSignal);
 listeNoms=listeSignal(1,:)';
 set(handles.listbox_signal_out,'String',listeNoms);
-set(handles.popupmenu_magnitude,'String',listeNoms);
-set(handles.popupmenu_phase,'String',listeNoms);
-% set(handles.listbox_transistor,'String',Displaytransistor(fileOutputSimulation));
-listeSignaux=getappdata(0,'listeSignaux');
+set(handles.listbox_transistor,'String',Displaytransistor(fileOutputSimulation));
 set(handles.listbox_signal_out,'Value',2);
-set(handles.popupmenu_magnitude,'Value',2);
-set(handles.popupmenu_phase,'Value',2);
+Plot(handles,2);
+
+function Plot(handles,indice_signal)
 % %On plot le signal selectionn?(XAXIS)
+listeSignaux=getappdata(0,'listeSignaux');
 axes(handles.axes1);
 temps=listeSignaux(2:end,1);
 temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
 %temps=cell2mat(temps);
-
 %On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,2);
+data2=listeSignaux(2:end,indice_signal);
 data2=cellfun(@str2num,data2); 
-scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
-if scale_xaxis
-    plot(temps,data2);
-else
+if get(handles.check_log,'Value')==1
     semilogx(temps,data2);
+else
+    plot(temps,data2);
+end
+if get(handles.checkX,'Value')==1
+    set(handles.axes1,'XGrid','on');
+    set(handles.axes1,'XMinorGrid','on');
+else
+    set(handles.axes1,'XGrid','off');
+    set(handles.axes1,'XMinorGrid','off');
+end
+if get(handles.checkY,'Value')==1
+    set(handles.axes1,'YGrid','on');
+    set(handles.axes1,'YMinorGrid','on');
+else
+    set(handles.axes1,'YGrid','off');
+    set(handles.axes1,'YMinorGrid','off');
 end
 axes(handles.axes1);
 xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,2}, 'FontSize', 10);
+ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
 set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
+guidata(handles.figure1, handles);
 
 
 % --- Executes on selection change in listbox_all.
@@ -319,41 +329,21 @@ function checkbox_current_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of checkbox_current
 
 
-% --- Executes on selection change in popupmenu_magnitude.
+% --- Executes on selection change in listbox_signal_out.
 function listbox_signal_out_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu_magnitude (see GCBO)
+% hObject    handle to listbox_signal_out (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_magnitude contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu_magnitude
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox_signal_out contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox_signal_out
 indice_signal=get(hObject,'Value');
-listeSignaux=getappdata(0,'listeSignaux');
-% %On plot le signal selectionn?(XAXIS)
-axes(handles.axes1);
-temps=listeSignaux(2:end,1);
-temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
-%temps=cell2mat(temps);
-
-%On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,indice_signal);
-data2=cellfun(@str2num,data2); 
-scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
-if scale_xaxis
-    plot(temps,data2);
-else
-    semilogx(temps,data2);
-end
-axes(handles.axes1);
-xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
-set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
+setappdata(0,'indice',indice_signal);
+Plot(handles,indice_signal);
 
 % --- Executes during object creation, after setting all properties.
 function listbox_signal_out_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu_magnitude (see GCBO)
+% hObject    handle to listbox_signal_out (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -369,14 +359,14 @@ function push_remove2_Callback(hObject, eventdata, handles)
 % hObject    handle to push_remove2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-selection = cellstr(get(handles.popupmenu_magnitude,'String'));
+selection = cellstr(get(handles.listbox_signal_out,'String'));
 if ~isempty(selection)
     list=getappdata(0,'listeSignaux');
-    list(:,get(handles.popupmenu_magnitude,'Value'))=[];
+    list(:,get(handles.listbox_signal_out,'Value'))=[];
     setappdata(0,'listeSignaux',list);
-    selection(get(handles.popupmenu_magnitude,'Value'))=[];
-    set(handles.popupmenu_magnitude,'String',selection);
-    set(handles.popupmenu_magnitude,'Value',1);
+    selection(get(handles.listbox_signal_out,'Value'))=[];
+    set(handles.listbox_signal_out,'String',selection);
+    set(handles.listbox_signal_out,'Value',1);
 end
 
 % --- Executes on button press in push_save.
@@ -498,19 +488,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu_magnitude.
+% --- Executes on selection change in listbox_signal_out.
 function listbox_freq_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu_magnitude (see GCBO)
+% hObject    handle to listbox_signal_out (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_magnitude contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu_magnitude
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox_signal_out contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox_signal_out
 
 
 % --- Executes during object creation, after setting all properties.
 function listbox_freq_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu_magnitude (see GCBO)
+% hObject    handle to listbox_signal_out (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -520,135 +510,35 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-function checkbox_dcgain_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu_magnitude (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-showdcgain = get(hObject,'Value');
-handles.showdcgain = showdcgain;
-guidata(hObject,handles)
-
-% --- Executes on button press in checkbox_3dbfreq.
-function checkbox_3dbfreq_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_3dbfreq (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% show_3dbfreq = get(hObject,'Value')
-handles.show3dbfreq = get(hObject,'Value');
-guidata(hObject,handles)
-
-
-% --- Executes on button press in checkbox_ugf.
-function checkbox_ugf_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_ugf (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.showugf = get(hObject,'Value');
-guidata(hObject,handles)
-
-
-% --- Executes on button press in checkbox_pm.
-function checkbox_pm_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_pm (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.showpm = get(hObject,'Value');
-guidata(hObject,handles)
-
-
-% --- Executes on button press in checkbox_pr.
-function checkbox_pr_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_pr (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.showpr = get(hObject,'Value');
-guidata(hObject,handles)
-
 function push_ac_metrics_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu_magnitude (see GCBO)
+% hObject    handle to listbox_signal_out (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
-freq_aux=getappdata(0,'listeSignaux');
-frequency=freq_aux(2:end,1);
-frequency=cellfun(@str2num,frequency);
-% handles.metricdata.frequency = frequency;
-% guidata(hObject,handles)
-
-indice_magnitude=get(handles.popupmenu_magnitude,'Value');
-mag_aux=getappdata(0,'listeSignaux');
-magnitude=mag_aux(2:end,indice_magnitude);
-magnitude=cellfun(@str2num,magnitude);
-
-indice_phase=get(handles.popupmenu_phase,'Value');
-phase_aux=getappdata(0,'listeSignaux');
-phase=phase_aux(2:end,indice_phase);
-phase=cellfun(@str2num,phase);
-
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
-performancetype_ac = get(handles.radiobutton_performancetype_ac,'Value');
+[DCgain, f3db, UGF, PM, PR] = AC_metrics(handles.metricdata.frequency,handles.metricdata.magnitude,handles.metricdata.phase)
+set(handles.DCgain, 'String', DCgain);
+set(handles.f3db, 'String', f3db);
+set(handles.UGF, 'String', UGF);
+set(handles.PM, 'String', PM);
+set(handles.PR, 'String', PR);
 
-if (performancetype_ac)
-    [DCgain, f3db, UGF, PM, PR] = AC_metrics(frequency,magnitude,phase);
+function acmetrics_frequency_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox_signal_out (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
-    performance = '';
-    showdcgain = get(handles.checkbox_dcgain,'Value');
-    show3dbfreq = get(handles.checkbox_3dbfreq,'Value');
-    showugf = get(handles.checkbox_ugf,'Value');
-    showpm = get(handles.checkbox_pm,'Value');
-    showpr = get(handles.checkbox_pr,'Value');
-    switch showdcgain
-        case 0
-        case 1
-            performance = [performance,'DCgain = ',DCgain,10];
-    end
-    switch show3dbfreq
-    	case 0
-        case 1
-            performance = [performance,'f3db = ',f3db,10];
-    end
-    switch showugf
-        case 0
-    	case 1
-            performance = [performance,'UGF = ',UGF,10];
-    end
-    switch showpm
-        case 0
-    	case 1
-            performance = [performance,'PM = ',PM,10];
-    end
-    switch showpr
-    	case 0
-        case 1
-            performance = [performance,'PR = ',PR,10];
-    end
+indice_frequency=get(hObject,'Value');
+freq_aux=getappdata(0,'listeSignaux');
 
-else
-
-    performance = '';
-    showdcgain = get(handles.checkbox_dcgain,'Value');
-    switch showdcgain
-        case 0
-        case 1
-%             frequency = linspace(0,0.001,131072);
-%             magnitude = sin(2*pi*5000000*frequency);
-            [SNDR,SFDR,THD] = FFT_metrics(frequency,magnitude);%,5E6,1E6,1E6,50E6);
-            performance = [performance,'SNDR = ',SNDR,10,'SFDR = ',SFDR,10,'THD = ',THD,10];
-    end
-
-end
-
-set(handles.performance, 'String', performance);
+frequency=freq_aux(2:end,indice_frequency);
+frequency=cellfun(@str2num,frequency)
+handles.metricdata.frequency = frequency;
+guidata(hObject,handles)
 
 function acmetrics_magnitude_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu_magnitude (see GCBO)
+% hObject    handle to listbox_signal_out (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -656,12 +546,12 @@ indice_magnitude=get(hObject,'Value');
 mag_aux=getappdata(0,'listeSignaux');
 
 magnitude=mag_aux(2:end,indice_magnitude);
-magnitude=cellfun(@str2num,magnitude);
+magnitude=cellfun(@str2num,magnitude)
 handles.metricdata.magnitude = magnitude;
 guidata(hObject,handles)
 
 function acmetrics_phase_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu_magnitude (see GCBO)
+% hObject    handle to listbox_signal_out (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -669,102 +559,37 @@ indice_phase=get(hObject,'Value');
 phase_aux=getappdata(0,'listeSignaux');
 
 phase=phase_aux(2:end,indice_phase);
-phase=cellfun(@str2num,phase);
+phase=cellfun(@str2num,phase)
 handles.metricdata.phase = phase;
 guidata(hObject,handles)
 
 
-% --- Executes on button press in radiobutton_xaxis_linear.
-function radiobutton_xaxis_linear_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton_xaxis_linear (see GCBO)
+% --- Executes on button press in check_log.
+function check_log_Callback(hObject, eventdata, handles)
+% hObject    handle to check_log (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.radiobutton_xaxis_linear,'value',1);
-set(handles.radiobutton_xaxis_log,'value',0);
-indice_signal=get(handles.listbox_signal_out,'Value');
-listeSignaux=getappdata(0,'listeSignaux');
-% %On plot le signal selectionn?(XAXIS)
-axes(handles.axes1);
-temps=listeSignaux(2:end,1);
-temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
-%temps=cell2mat(temps);
 
-%On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,indice_signal);
-data2=cellfun(@str2num,data2); 
-scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
-if scale_xaxis
-    plot(temps,data2);
-else
-    semilogx(temps,data2);
-end
-axes(handles.axes1);
-xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
-set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
+% Hint: get(hObject,'Value') returns toggle state of check_log
+Plot(handles,getappdata(0,'indice'));
 
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton_xaxis_linear
-
-
-% --- Executes on button press in radiobutton_xaxis_log.
-function radiobutton_xaxis_log_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton_xaxis_log (see GCBO)
+% --- Executes on button press in checkX.
+function checkX_Callback(hObject, eventdata, handles)
+% hObject    handle to checkX (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.radiobutton_xaxis_log,'value',1);
-set(handles.radiobutton_xaxis_linear,'value',0);
-indice_signal=get(handles.listbox_signal_out,'Value');
-listeSignaux=getappdata(0,'listeSignaux');
-% %On plot le signal selectionn?(XAXIS)
-axes(handles.axes1);
-temps=listeSignaux(2:end,1);
-temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
-%temps=cell2mat(temps);
 
-%On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,indice_signal);
-data2=cellfun(@str2num,data2); 
-scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
-if scale_xaxis
-    plot(temps,data2);
-else
-    semilogx(temps,data2);
-end
-axes(handles.axes1);
-xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
-set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
-guidata(hObject,handles)
-% Hint: get(hObject,'Value') returns toggle state of radiobutton_xaxis_log
+% Hint: get(hObject,'Value') returns toggle state of checkX
+Plot(handles,getappdata(0,'indice'));
 
 
-% --- Executes on button press in radiobutton_performancetype_ac.
-function radiobutton_performancetype_ac_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton_performancetype_ac (see GCBO)
+% --- Executes on button press in checkY.
+function checkY_Callback(hObject, eventdata, handles)
+% hObject    handle to checkY (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.radiobutton_performancetype_ac,'value',1);
-set(handles.radiobutton_performancetype_tran,'value',0);
-set(handles.text6,'String','Magnitude');
-set(handles.text7,'String','Phase');
-set(handles.checkbox_dcgain,'String','DC Gain');
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton_performancetype_ac
+% Hint: get(hObject,'Value') returns toggle state of checkY
+Plot(handles,getappdata(0,'indice'));
 
-
-% --- Executes on button press in radiobutton_performancetype_tran.
-function radiobutton_performancetype_tran_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton_performancetype_tran (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-set(handles.radiobutton_performancetype_tran,'value',1);
-set(handles.radiobutton_performancetype_ac,'value',0);
-set(handles.text6,'String','Signal1');
-set(handles.text7,'String','Signal2');
-set(handles.checkbox_dcgain,'String','FFT');
-% Hint: get(hObject,'Value') returns toggle state of radiobutton_performancetype_tran
