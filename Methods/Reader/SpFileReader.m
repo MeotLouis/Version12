@@ -13,7 +13,7 @@ while ischar(tline)
     tline = fgetl(fid);
 end
 fclose(fid);
-
+tlines2=tlines;
 %%Tlines reader
 [ligne,~]=size(tlines);
 for i=1:ligne
@@ -24,6 +24,7 @@ end
 SpLoader(tlines,handles);
 
 %%We set the tlines inside the listbox all
-set(handles.listbox_all_lines,'String',tlines);
+assignin('base','tlines',tlines);
+set(handles.listbox_all_lines,'String',tlines2);
 
 

@@ -556,5 +556,8 @@ function push_back_Callback(hObject, eventdata, handles)
 % hObject    handle to push_back (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+setappdata(0,'file_press_back',get(handles.edit_path_file,'String'));
+close(GUI_Add_Analysis());
 GUI_create_sp_file();
+
 

@@ -57,7 +57,11 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
-Init(handles);
+if isequal(getappdata(0,'file_press_back'),'false')
+    Init(handles);
+else
+    InitFromAddAnalysis(handles);
+end
 
 % UIWAIT makes GUI_create_sp_file wa={'a','ait for user response (see UIRESUME)
 % uiwait(handles.figure1);
