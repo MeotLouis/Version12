@@ -1,4 +1,4 @@
-function SpLoader( tlines,handles,file )
+function SpLoader( tlines,handles )
 %SPLOADER Summary of this function goes here
 %   Detailed explanation goes here
 [ligne,~]=size(tlines);
@@ -7,9 +7,11 @@ for i=1:ligne
     if ~isempty(tlines{i,1}{1,1})
         if isequal(tlines{i,1}{1,1},'.subckt')
             sub=1;
+            display(sub);
         end
         if isequal(tlines{i,1}{1,1},'.ends')
             sub=0;
+            display(sub);
         end
         if iscell(tlines{i,1})
             if sub==0
@@ -34,7 +36,7 @@ for i=1:ligne
                     ImportSimpleElement(tlines{i,1},handles);
                 else
                     if isequal(tlines{i,1}{1,1},'.LIB')
-                        ImportTechno(tlines{i,1},handles,file);
+                        ImportTechno(tlines{i,1},handles,
                     end
                     if ~isequal(tlines{i,1}{1,1}(1),'.')&&...
                             ~isequal(tlines{i,1}{1,1}(1),'+')&&...

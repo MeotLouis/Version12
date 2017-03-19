@@ -7,7 +7,7 @@ else
     text=get(handles.edit_name_netlist,'String');
     setappdata(0,'name_netlist',text);
     setappdata(0,'nb_netlist',getappdata(0,'nb_netlist')+1);
-    set(hObject,'Enable','on');
+    set(handles.push_add_name,'Enable','on');
     set(handles.edit_netlist_subckt,'String',[get(handles.edit_netlist_subckt,'String'),' ',text,' ']);
     
 %     %----UPDATE DATA-----%

@@ -45,4 +45,4 @@ if ~isempty(get(handles.edit_path_technology,'String'))
     model=getappdata(0,'current_models')';
     model=model{get(handles.popup_bipolar,'Value')};
 end
-BipolarCreator( handles,C,B,E,name,model );
+BipolarCreator( handles,C,B,E,name,model,foo );

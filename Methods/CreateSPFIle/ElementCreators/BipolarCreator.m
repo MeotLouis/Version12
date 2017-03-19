@@ -1,4 +1,4 @@
-function BipolarCreator( handles,C,B,E,name,model )
+function BipolarCreator( handles,C,B,E,name,model,foo )
 %BIPOLARCREATOR Summary of this function goes here
 %   Detailed explanation goes here
 

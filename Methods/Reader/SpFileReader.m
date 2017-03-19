@@ -21,10 +21,9 @@ for i=1:ligne
 end
 %We import the element inside the data structure and we generate the
 %graphical representation
-SpLoader(tlines,handles);
+SpLoader(tlines,handles,file);
 
 %%We set the tlines inside the listbox all
-assignin('base','tlines',tlines);
 set(handles.listbox_all_lines,'String',tlines2);
 
 

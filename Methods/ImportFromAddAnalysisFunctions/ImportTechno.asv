@@ -1,0 +1,13 @@
+function ImportTechno( tlines,handles,file )
+%IMPORTTECHNO Summary of this function goes here
+%   Detailed explanation goes here
+[pathstr,name,ext] = fileparts(file);
+set(handles.edit_path_technology,'string',strcat(path,name_file));
+setappdata(0,'file_technology',name_file);
+setappdata(0,'full_file_technology',strcat(path,name_file));
+[a,b]=libraryReader(strcat(path,name_file));
+set(handles.popup_techno,'String',a);
+setappdata(0,'list_models',b);
+setappdata(0,'quelle_techno',a{1,1});
+end
+
