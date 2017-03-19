@@ -3,10 +3,12 @@ function SpLoader( tlines,handles,file )
 %   Detailed explanation goes here
 [ligne,~]=size(tlines);
 sub=0;
+subcircuitlist=cell(0,1);
 for i=1:ligne
     if ~isempty(tlines{i,1}{1,1})
         if isequal(tlines{i,1}{1,1},'.subckt')
             sub=1;
+            subcircuitlist{end+1,1}=tlines{i,1};
         end
         if isequal(tlines{i,1}{1,1},'.ends')
             sub=0;
@@ -39,7 +41,7 @@ for i=1:ligne
                     if ~isequal(tlines{i,1}{1,1}(1),'.')&&...
                             ~isequal(tlines{i,1}{1,1}(1),'+')&&...
                             ~isequal(tlines{i,1}{1,1}(1),'*')
-                        %ImportSUB(tlines{i,1},tlines);
+                        ImportSUB(tlines{i,1},handles,subcircuitlist);
                     end
                 end
             end
