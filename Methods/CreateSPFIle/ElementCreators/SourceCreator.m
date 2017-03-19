@@ -1,4 +1,4 @@
-function SourceCreator( node1,node2,name,type2,value )
+function SourceCreator( node1,node2,name,type2,type,value,handles )
 %SOURCECREATOR Summary of this function goes here
 %   Detailed explanation goes here
 

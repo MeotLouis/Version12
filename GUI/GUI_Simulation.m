@@ -22,7 +22,7 @@ function varargout = GUI_Simulation(varargin)
 
 % Edit the above text to modify the response to help GUI_Simulation
 
-% Last Modified by GUIDE v2.5 17-Mar-2017 00:46:57
+% Last Modified by GUIDE v2.5 18-Mar-2017 18:04:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -138,31 +138,31 @@ set(handles.listbox_signal_out,'String',listeNoms);
 set(handles.popupmenu_magnitude,'String',listeNoms);
 set(handles.popupmenu_phase,'String',listeNoms);
 % set(handles.listbox_transistor,'String',Displaytransistor(fileOutputSimulation));
-listeSignaux=getappdata(0,'listeSignaux');
 set(handles.listbox_signal_out,'Value',2);
 set(handles.popupmenu_magnitude,'Value',2);
 set(handles.popupmenu_phase,'Value',2);
-% %On plot le signal selectionn?(XAXIS)
-axes(handles.axes1);
-temps=listeSignaux(2:end,1);
-temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
-%temps=cell2mat(temps);
-
-%On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,2);
-data2=cellfun(@str2num,data2); 
-scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
-if scale_xaxis
-    plot(temps,data2);
-else
-    semilogx(temps,data2);
-end
-axes(handles.axes1);
-xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,2}, 'FontSize', 10);
-set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
+Plot(handles,1);
+% % %On plot le signal selectionn?(XAXIS)
+% axes(handles.axes1);
+% temps=listeSignaux(2:end,1);
+% temps=cellfun(@str2num,temps); 
+% assignin('base','temps',temps);
+% %temps=cell2mat(temps);
+% 
+% %On plot le signal selectionn?(YAXIS)
+% data2=listeSignaux(2:end,2);
+% data2=cellfun(@str2num,data2); 
+% scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
+% if scale_xaxis
+%     plot(temps,data2);
+% else
+%     semilogx(temps,data2);
+% end
+% axes(handles.axes1);
+% xlabel(listeSignaux{1,1}, 'FontSize', 10);
+% ylabel(listeSignaux{1,2}, 'FontSize', 10);
+% set(handles.uitoolbar1,'visible','on');
+% guidata(hObject, handles);
 
 
 % --- Executes on selection change in listbox_all.
@@ -329,27 +329,28 @@ function listbox_signal_out_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_magnitude
 indice_signal=get(hObject,'Value');
 listeSignaux=getappdata(0,'listeSignaux');
-% %On plot le signal selectionn?(XAXIS)
-axes(handles.axes1);
-temps=listeSignaux(2:end,1);
-temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
-%temps=cell2mat(temps);
-
-%On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,indice_signal);
-data2=cellfun(@str2num,data2); 
-scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
-if scale_xaxis
-    plot(temps,data2);
-else
-    semilogx(temps,data2);
-end
-axes(handles.axes1);
-xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
-set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
+Plot(handles, indice_signal);
+% % %On plot le signal selectionn?(XAXIS)
+% axes(handles.axes1);
+% temps=listeSignaux(2:end,1);
+% temps=cellfun(@str2num,temps); 
+% assignin('base','temps',temps);
+% %temps=cell2mat(temps);
+% 
+% %On plot le signal selectionn?(YAXIS)
+% data2=listeSignaux(2:end,indice_signal);
+% data2=cellfun(@str2num,data2); 
+% scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
+% if scale_xaxis
+%     plot(temps,data2);
+% else
+%     semilogx(temps,data2);
+% end
+% axes(handles.axes1);
+% xlabel(listeSignaux{1,1}, 'FontSize', 10);
+% ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
+ set(handles.uitoolbar1,'visible','on');
+ guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
 function listbox_signal_out_CreateFcn(hObject, eventdata, handles)
@@ -682,28 +683,29 @@ function radiobutton_xaxis_linear_Callback(hObject, eventdata, handles)
 set(handles.radiobutton_xaxis_linear,'value',1);
 set(handles.radiobutton_xaxis_log,'value',0);
 indice_signal=get(handles.listbox_signal_out,'Value');
-listeSignaux=getappdata(0,'listeSignaux');
-% %On plot le signal selectionn?(XAXIS)
-axes(handles.axes1);
-temps=listeSignaux(2:end,1);
-temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
-%temps=cell2mat(temps);
-
-%On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,indice_signal);
-data2=cellfun(@str2num,data2); 
-scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
-if scale_xaxis
-    plot(temps,data2);
-else
-    semilogx(temps,data2);
-end
-axes(handles.axes1);
-xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
-set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
+Plot(handles,indice_signal);
+% listeSignaux=getappdata(0,'listeSignaux');
+% % %On plot le signal selectionn?(XAXIS)
+% axes(handles.axes1);
+% temps=listeSignaux(2:end,1);
+% temps=cellfun(@str2num,temps); 
+% assignin('base','temps',temps);
+% %temps=cell2mat(temps);
+% 
+% %On plot le signal selectionn?(YAXIS)
+% data2=listeSignaux(2:end,indice_signal);
+% data2=cellfun(@str2num,data2); 
+% scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
+% if scale_xaxis
+%     plot(temps,data2);
+% else
+%     semilogx(temps,data2);
+% end
+% axes(handles.axes1);
+% xlabel(listeSignaux{1,1}, 'FontSize', 10);
+% ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
+% set(handles.uitoolbar1,'visible','on');
+% guidata(hObject, handles);
 
 
 % Hint: get(hObject,'Value') returns toggle state of radiobutton_xaxis_linear
@@ -717,30 +719,31 @@ function radiobutton_xaxis_log_Callback(hObject, eventdata, handles)
 set(handles.radiobutton_xaxis_log,'value',1);
 set(handles.radiobutton_xaxis_linear,'value',0);
 indice_signal=get(handles.listbox_signal_out,'Value');
-listeSignaux=getappdata(0,'listeSignaux');
-% %On plot le signal selectionn?(XAXIS)
-axes(handles.axes1);
-temps=listeSignaux(2:end,1);
-temps=cellfun(@str2num,temps); 
-assignin('base','temps',temps);
-%temps=cell2mat(temps);
-
-%On plot le signal selectionn?(YAXIS)
-data2=listeSignaux(2:end,indice_signal);
-data2=cellfun(@str2num,data2); 
-scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
-if scale_xaxis
-    plot(temps,data2);
-else
-    semilogx(temps,data2);
-end
-axes(handles.axes1);
-xlabel(listeSignaux{1,1}, 'FontSize', 10);
-ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
-set(handles.uitoolbar1,'visible','on');
-guidata(hObject, handles);
-guidata(hObject,handles)
-% Hint: get(hObject,'Value') returns toggle state of radiobutton_xaxis_log
+Plot(handles,indice_signal);
+% listeSignaux=getappdata(0,'listeSignaux');
+% % %On plot le signal selectionn?(XAXIS)
+% axes(handles.axes1);
+% temps=listeSignaux(2:end,1);
+% temps=cellfun(@str2num,temps); 
+% assignin('base','temps',temps);
+% %temps=cell2mat(temps);
+% 
+% %On plot le signal selectionn?(YAXIS)
+% data2=listeSignaux(2:end,indice_signal);
+% data2=cellfun(@str2num,data2); 
+% scale_xaxis = get(handles.radiobutton_xaxis_linear,'Value');
+% if scale_xaxis
+%     plot(temps,data2);
+% else
+%     semilogx(temps,data2);
+% end
+% axes(handles.axes1);
+% xlabel(listeSignaux{1,1}, 'FontSize', 10);
+% ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
+% set(handles.uitoolbar1,'visible','on');
+% guidata(hObject, handles);
+% guidata(hObject,handles)
+% % Hint: get(hObject,'Value') returns toggle state of radiobutton_xaxis_log
 
 
 % --- Executes on button press in radiobutton_performancetype_ac.
@@ -768,3 +771,58 @@ set(handles.text6,'String','Signal1');
 set(handles.text7,'String','Signal2');
 set(handles.checkbox_dcgain,'String','FFT');
 % Hint: get(hObject,'Value') returns toggle state of radiobutton_performancetype_tran
+
+
+% --- Executes on button press in checkX.
+function checkX_Callback(hObject, eventdata, handles)
+% hObject    handle to checkX (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkX
+Plot(handles,get(handles.listbox_signal_out,'Value'));
+
+% --- Executes on button press in checkY.
+function checkY_Callback(hObject, eventdata, handles)
+% hObject    handle to checkY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkY
+Plot(handles,get(handles.listbox_signal_out,'Value'));
+
+function Plot(handles,indice_signal)
+% %On plot le signal selectionn?(XAXIS)
+listeSignaux=getappdata(0,'listeSignaux');
+axes(handles.axes1);
+temps=listeSignaux(2:end,1);
+temps=cellfun(@str2num,temps); 
+%temps=cell2mat(temps);
+%On plot le signal selectionn?(YAXIS)
+data2=listeSignaux(2:end,indice_signal);
+data2=cellfun(@str2num,data2); 
+if get(handles.radiobutton_xaxis_linear,'Value')==0
+    semilogx(temps,data2);
+else
+    plot(temps,data2);
+end
+if get(handles.checkX,'Value')==1
+    set(handles.axes1,'XGrid','on');
+    set(handles.axes1,'XMinorGrid','on');
+else
+    set(handles.axes1,'XGrid','off');
+    set(handles.axes1,'XMinorGrid','off');
+end
+if get(handles.checkY,'Value')==1
+    set(handles.axes1,'YGrid','on');
+    set(handles.axes1,'YMinorGrid','on');
+else
+    set(handles.axes1,'YGrid','off');
+    set(handles.axes1,'YMinorGrid','off');
+end
+axes(handles.axes1);
+xlabel(listeSignaux{1,1}, 'FontSize', 10);
+ylabel(listeSignaux{1,indice_signal}, 'FontSize', 10);
+set(handles.uitoolbar1,'visible','on');
+guidata(handles.figure1, handles);
+

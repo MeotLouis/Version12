@@ -57,7 +57,11 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
-Init(handles);
+if isequal(getappdata(0,'file_press_back'),'false')
+    Init(handles);
+else
+    InitFromAddAnalysis(handles);
+end
 
 % UIWAIT makes GUI_create_sp_file wa={'a','ait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -1465,6 +1469,17 @@ if name_file ~= 0
     setappdata(0,'list_models',b);
     setappdata(0,'quelle_techno',a{1,1});
 end
+contents = cellstr(get(handles.popup_techno,'String'));
+setappdata(0,'quelle_techno',contents{get(handles.popup_techno,'Value')});
+b=getappdata(0,'list_models');
+setappdata(0,'current_models',b(get(handles.popup_techno,'Value'),:));
+set(handles.popup_JFET,'enable','on');
+set(handles.popup_JFET,'String',getappdata(0,'current_models')');
+set(handles.popup_MOSFET,'enable','on');
+set(handles.popup_MOSFET,'String',getappdata(0,'current_models')');
+set(handles.popup_bipolar,'enable','on');
+set(handles.popup_bipolar,'String',getappdata(0,'current_models')');
+setappdata(0,'import_techno_already_done',0);
 
 
 function edit_path_technology_Callback(hObject, eventdata, handles)

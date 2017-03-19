@@ -13,7 +13,7 @@ while ischar(tline)
     tline = fgetl(fid);
 end
 fclose(fid);
-
+tlines2=tlines;
 %%Tlines reader
 [ligne,~]=size(tlines);
 for i=1:ligne
@@ -21,9 +21,9 @@ for i=1:ligne
 end
 %We import the element inside the data structure and we generate the
 %graphical representation
-SpLoader(tlines,handles);
+SpLoader(tlines,handles,file);
 
 %%We set the tlines inside the listbox all
-set(handles.listbox_all_lines,'String',tlines);
+set(handles.listbox_all_lines,'String',tlines2);
 
 
