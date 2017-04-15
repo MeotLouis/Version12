@@ -62,6 +62,11 @@ if isequal(getappdata(0,'file_press_back'),'false')
 else
     InitFromAddAnalysis(handles);
 end
+Add_Nodes('0');
+data=getappdata(0,'data');
+set(handles.popup_node_netlist,'String',data{1,1});
+set(handles.popup_node1_element,'String',data{1,1});
+set(handles.popup_node2_element,'String',data{1,1});
 
 % UIWAIT makes GUI_create_sp_file wa={'a','ait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -654,7 +659,7 @@ function popup_add_netlist_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popup_add_netlist contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popup_add_netlist
-PopupAddElement(hObject,handles);
+PopupAddNetlist(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
 function popup_add_netlist_CreateFcn(hObject, eventdata, handles)

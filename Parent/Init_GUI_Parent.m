@@ -3,6 +3,7 @@ current=pwd;
 current2=pwd;
 path2=[current,'\'];
 setappdata(0,'current_directory_project',path2);
+display([path2,'Data\data.txt']);
 fid=fopen([path2,'Data\data.txt']);
 %fid=fopen('data.txt');
 tline=fgetl(fid);
